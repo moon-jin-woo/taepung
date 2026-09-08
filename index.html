@@ -681,7 +681,7 @@ function pushTrail(latlng){
     if (Math.abs(latlng.lng - last.lng) > 180){
       // 지도 랩어라운드(날짜변경선 통과) 시 선이 지도를 가로지르지 않도록 새 선분 시작
       trackLine = null;
-    } else if (map.distance(latlng, last) < 2000){
+    } else if (map.distance(latlng, last) < 1500){
       return; // 최적화: 2km 미만 이동은 점을 추가하지 않음 (포인트 수 절약, 선은 영구 유지)
     }
   }
@@ -780,7 +780,7 @@ const newsTicker = document.getElementById('newsTicker');
 const newsTextEl = document.getElementById('newsText');
 let newsQueue = [];
 let newsTimer = 0;
-const NEWS_DISPLAY_TIME = 4.0;
+const NEWS_DISPLAY_TIME = 2.0;
 const FLAVOR_NEWS = [
   "오늘 전국 대부분 지역 맑음, 낮 기온 평년과 비슷",
   "국내 증시 보합권에서 등락 반복",
@@ -817,6 +817,26 @@ const FLAVOR_NEWS = [
   "야구장 매진 행렬...예매 전쟁 치열",
   "지역 병원, 무료 건강검진 캠페인 실시",
   "새 영화 개봉 첫 주 박스오피스 1위",
+  "스마트폰 중독자들을 위한 지원 확대",
+  "정부, 교내 스마트폰 반입 완전 금지",
+  "앞산에 멧돼지 대량 하산...주민 대피",
+  "고인돌 안에 우라늄 발견...청동기 기술력 재평가",
+  "소고기 금지 법안 마참내 국회 통과",
+  "대통령실, '대통령은 오직 사람만 가능하다'",
+  "꽃게 훔친 70대 노인, 무죄판결 확정",
+  "독감 유행 시작...마스크 착용 일상화",
+  "코스피 500%하락...국내 주주들 어쩌나",
+  "대건고 100주년 기념 미사 진행",
+  "트럼프, 모기와의 전쟁 선포",
+  "기후 전문가 '슈퍼 태풍 올 것'",
+  "스탠딩 책상 철거법 본회의 통과",
+  "이번 태풍으로 인해 경제 손실 엄청나",
+  "비정상적인 태풍 존속기간..왜 그런가?",
+  "'응답하라 2026', 박스오피스 1위",
+  "탈모치료제 개발 연구원 집단 실종",
+  "청산별곡, 금지곡 지정 확정",
+  "독도에 초거대 스타디움 개장",
+  "5등급제, 이젠 1등급제로..."
 ];
 function pushNews(text){ newsQueue.push(text); }
 function showNewsText(text){
@@ -835,7 +855,7 @@ function tickerUpdate(dt){
 }
 
 let combo = { count:0, lastTime:-999 };
-const COMBO_WINDOW = 12; // 초 이내에 다음 도시를 파괴하면 콤보 유지
+const COMBO_WINDOW = 30; // 초 이내에 다음 도시를 파괴하면 콤보 유지
 
 // ── 방파제(대피경보) 시스템: 주기적으로 무작위 도시가 임시로 피해를 덜 입게 됨 ──
 function triggerBreakwater(){
