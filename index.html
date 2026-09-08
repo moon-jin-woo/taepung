@@ -256,7 +256,7 @@
 
   <div class="screen" id="nameScreen">
     <h1 class="title-main">태풍 키우기</h1>
-    <p class="subtitle">실제 지구 지도(OpenStreetMap) 위에서 태풍이 되어<br/>세력을 키우고 이름을 남기세요.</p>
+    <p class="subtitle">실제 지구 지도(OpenStreetMap) 위에서 태풍이 되어<br/>세력을 키우고 이름을 남기세요.<br/>모바일은 화면 하단 조이스틱, PC는 방향키/WASD로 조작합니다.</p>
     <div class="card bracket-panel">
       <div class="tl"></div><div class="tr"></div><div class="bl"></div><div class="br"></div>
       <div class="field-label">태풍의 이름</div>
@@ -596,6 +596,36 @@ const NE_ASIA_CITIES = [
   {name:"제양",lat:23.55,lng:116.36,dmg:80},{name:"차오저우",lat:23.66,lng:116.63,dmg:60},
   {name:"메이저우",lat:24.29,lng:116.12,dmg:60},{name:"산웨이",lat:22.78,lng:115.36,dmg:70},
   {name:"양장",lat:21.86,lng:111.98,dmg:70},{name:"마오밍",lat:21.66,lng:110.93,dmg:80},
+  // ── 추가 확충: 필리핀 (세계 최대 태풍 취약국) ──
+  {name:"세부",lat:10.32,lng:123.90,dmg:180},{name:"다바오",lat:7.19,lng:125.46,dmg:170},
+  {name:"일로일로",lat:10.72,lng:122.56,dmg:90},{name:"레가스피",lat:13.14,lng:123.74,dmg:70},
+  {name:"타클로반",lat:11.24,lng:125.00,dmg:90},{name:"삼보앙가",lat:6.91,lng:122.08,dmg:110},
+  {name:"카가얀데오로",lat:8.48,lng:124.65,dmg:100},{name:"제너럴산토스",lat:6.11,lng:125.17,dmg:90},
+  {name:"바콜로드",lat:10.68,lng:122.95,dmg:90},{name:"앙헬레스",lat:15.15,lng:120.59,dmg:70},
+  {name:"바기오",lat:16.41,lng:120.60,dmg:60},{name:"푸에르토프린세사",lat:9.74,lng:118.74,dmg:50},
+  // ── 추가 확충: 베트남 ──
+  {name:"하노이",lat:21.03,lng:105.85,dmg:220},{name:"호치민",lat:10.82,lng:106.63,dmg:260},
+  {name:"하이퐁",lat:20.86,lng:106.68,dmg:140},{name:"다낭",lat:16.05,lng:108.22,dmg:120},
+  {name:"후에",lat:16.46,lng:107.59,dmg:70},{name:"나트랑",lat:12.24,lng:109.19,dmg:80},
+  {name:"붕따우",lat:10.35,lng:107.08,dmg:60},
+  // ── 추가 확충: 방글라데시·인도 동부 (사이클론 취약지역) ──
+  {name:"다카",lat:23.81,lng:90.41,dmg:260},{name:"치타공",lat:22.34,lng:91.83,dmg:180},
+  {name:"쿨나",lat:22.85,lng:89.55,dmg:90},{name:"바리살",lat:22.70,lng:90.37,dmg:60},
+  {name:"콕스바자르",lat:21.44,lng:91.97,dmg:50},{name:"콜카타",lat:22.57,lng:88.36,dmg:260},
+  {name:"비사카파트남",lat:17.69,lng:83.22,dmg:140},{name:"푸리",lat:19.80,lng:85.83,dmg:50},
+  {name:"파라디프",lat:20.32,lng:86.61,dmg:40},
+  // ── 추가 확충: 미국 걸프·대서양 연안 ──
+  {name:"휴스턴",lat:29.76,lng:-95.37,dmg:240},{name:"코퍼스크리스티",lat:27.80,lng:-97.40,dmg:90},
+  {name:"갤버스턴",lat:29.30,lng:-94.80,dmg:60},{name:"탬파",lat:27.95,lng:-82.46,dmg:150},
+  {name:"찰스턴",lat:32.78,lng:-79.93,dmg:90},{name:"서배너",lat:32.08,lng:-81.09,dmg:70},
+  {name:"윌밍턴",lat:34.23,lng:-77.94,dmg:60},{name:"버지니아비치",lat:36.85,lng:-75.98,dmg:110},
+  // ── 추가 확충: 카리브해 ──
+  {name:"산후안",lat:18.47,lng:-66.11,dmg:120},{name:"산토도밍고",lat:18.49,lng:-69.89,dmg:140},
+  {name:"포르토프랭스",lat:18.59,lng:-72.31,dmg:120},{name:"나소",lat:25.06,lng:-77.35,dmg:60},
+  // ── 추가 확충: 호주·태평양 (사이클론 취약지역) ──
+  {name:"브리즈번",lat:-27.47,lng:153.03,dmg:220},{name:"케언즈",lat:-16.92,lng:145.77,dmg:60},
+  {name:"다윈",lat:-12.46,lng:130.84,dmg:60},{name:"타운즈빌",lat:-19.26,lng:146.82,dmg:70},
+  {name:"호놀룰루",lat:21.31,lng:-157.86,dmg:140},{name:"괌",lat:13.48,lng:144.75,dmg:50},
 ];
 // 기존 목록과 가까운 도시는 중복으로 보고 건너뜀 (12km 이내)
 function mergeCities(base, extra){
@@ -748,6 +778,7 @@ const joystickZone = document.getElementById('joystickZone');
 const joyBase = document.getElementById('joyBase');
 const joyKnob = document.getElementById('joyKnob');
 const joyInput = { x:0, y:0 };
+const keyInput = { x:0, y:0 }; // 컴퓨터 버전: WASD/방향키 지원
 const smoothInput = { x:0, y:0 }; // 실제 이동에는 이 값을 사용 (지터 제거, 완전 부드러운 아날로그 느낌)
 let joyActive=false, joyCenter={x:0,y:0};
 const JOY_MAX=55;
@@ -764,6 +795,22 @@ joystickZone.addEventListener('pointerdown', e=>{ joystickZone.setPointerCapture
 joystickZone.addEventListener('pointermove', e=>{ if(joyActive) joyMove(e.clientX,e.clientY); });
 joystickZone.addEventListener('pointerup', joyEnd);
 joystickZone.addEventListener('pointercancel', joyEnd);
+
+// 컴퓨터 버전: WASD / 방향키로도 조작 가능하게. 눌린 키 조합으로 방향 벡터를 만들고 정규화한다.
+const heldKeys = new Set();
+function recalcKeyInput(){
+  let x=0, y=0;
+  if (heldKeys.has('ArrowLeft') || heldKeys.has('a') || heldKeys.has('A')) x -= 1;
+  if (heldKeys.has('ArrowRight')|| heldKeys.has('d') || heldKeys.has('D')) x += 1;
+  if (heldKeys.has('ArrowUp')   || heldKeys.has('w') || heldKeys.has('W')) y -= 1;
+  if (heldKeys.has('ArrowDown') || heldKeys.has('s') || heldKeys.has('S')) y += 1;
+  const len = Math.hypot(x,y);
+  if (len > 0){ keyInput.x = x/len; keyInput.y = y/len; } else { keyInput.x = 0; keyInput.y = 0; }
+}
+window.addEventListener('keydown', e=>{ heldKeys.add(e.key); recalcKeyInput(); });
+window.addEventListener('keyup',   e=>{ heldKeys.delete(e.key); recalcKeyInput(); });
+window.addEventListener('blur', ()=>{ heldKeys.clear(); recalcKeyInput(); });
+
 
 const STATE = { NAME:'name', LOCATE:'locate', PLAYING:'playing', PAUSED:'paused', RESULT:'result' };
 let gameState = STATE.NAME;
@@ -1052,9 +1099,10 @@ function loop(now){
     const stats = stormStats(world.power);
     const speed = CONFIG.BASE_SPEED_PX*stats.speedMul;
     // 조이스틱 원값을 그대로 쓰지 않고 매 프레임 부드럽게 보간해 이동이 각지지 않고 매끄럽게 느껴지도록 함
+    const rawInput = joyActive ? joyInput : keyInput; // 컴퓨터 버전: 조이스틱을 안 쓰면 키보드 입력 사용
     const smoothing = 1 - Math.pow(0.001, dt); // 프레임레이트에 무관하게 일정한 부드러움 유지
-    smoothInput.x += (joyInput.x - smoothInput.x) * smoothing;
-    smoothInput.y += (joyInput.y - smoothInput.y) * smoothing;
+    smoothInput.x += (rawInput.x - smoothInput.x) * smoothing;
+    smoothInput.y += (rawInput.y - smoothInput.y) * smoothing;
     if (Math.abs(smoothInput.x)>0.01 || Math.abs(smoothInput.y)>0.01){
       map.panBy([smoothInput.x*speed*dt, smoothInput.y*speed*dt], { animate:false });
       trailTick += dt; if (trailTick>0.15){ trailTick=0; pushTrail(map.getCenter()); }
@@ -1097,6 +1145,7 @@ const locConfirmWrap = document.getElementById('locConfirmWrap');
 const locConfirmBtn = document.getElementById('locConfirmBtn');
 const locMsg = document.getElementById('locMsg');
 const nameInput = document.getElementById('nameInput');
+nameInput.addEventListener('keydown', e=>{ if (e.key==='Enter') document.getElementById('toLocationBtn').click(); });
 const typhoonSprite = document.getElementById('typhoonSprite');
 
 // 실제 태풍처럼 보이도록 로그 나선(logarithmic spiral) 좌표를 계산해 SVG 팔을 생성
