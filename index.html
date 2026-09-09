@@ -505,7 +505,7 @@ function cityColor(city){
 const NE_ASIA_CITIES = [
   // 한국
   {name:"부산",lat:35.18,lng:129.08,dmg:300},{name:"인천",lat:37.46,lng:126.70,dmg:260},
-  {name:"민서집",lat:35.83,lng:128.55,dmg:90,forceLabel:true,small:true},{name:"대전",lat:36.35,lng:127.38,dmg:190},
+  {name:"민서집",lat:35.8241,lng:128.5303,dmg:90,forceLabel:true,small:true},{name:"대전",lat:36.35,lng:127.38,dmg:190},
   {name:"광주",lat:35.16,lng:126.85,dmg:190},{name:"울산",lat:35.54,lng:129.31,dmg:210},
   {name:"수원",lat:37.26,lng:127.01,dmg:180},{name:"창원",lat:35.23,lng:128.68,dmg:170},
   {name:"고양",lat:37.66,lng:126.83,dmg:160},{name:"성남",lat:37.44,lng:127.14,dmg:160},
@@ -909,20 +909,7 @@ const FLAVOR_NEWS = [
 ];
 // ── 이스터에그: 태풍 이름이 "김민서"일 때 섞여 나오는 전용 드립성 뉴스 ──
 const MINSEO_NEWS = [
-  "속보: 김민서, 사실은 훈남이었다...전국이 충격",
-  "속보: '김민서'라는 이름, 여자 이름인 줄 알았던 사람들 대혼란",
-  "단독: 김민서, 알고 보니 상남자였다",
-  "속보: 민서집 주민들, 태풍 김민서 앞에서 떨고 있다",
-  "속보: 김민서, 오늘도 태풍처럼 등장",
-  "속보: 여론조사 결과 '김민서는 남자다' 응답률 89%",
-  "속보: 김민서, 이름값 못하고 힘만 세다는 평가",
-  "속보: 민서집, 방파제 신청했으나 정부 예산 부족으로 반려",
-  "속보: 김민서, 태풍계의 뉴페이스로 등극",
-  "속보: 김민서, 자기 집(민서집)부터 부순다는 소문 확산",
-  "속보: 오늘의 인물 '김민서' 선정...선정 이유는 아무도 모름",
-  "속보: '태풍 김민서' 실시간 검색어 1위 등극",
-  "속보: 김민서 별명, '태풍남'으로 잠정 확정",
-  "속보: 민서집 주민들, 대피 대신 구경 나와 눈총",
+
   "속보: 김민서, 본인이 태풍인 줄도 모르고 산책 중이었다는 목격담",
 ];
 function pushNews(text){ newsQueue.push(text); }
@@ -1087,7 +1074,7 @@ function applyCityDamage(dt, stats, lat, lng){
       if (c.name === '민서집'){
         showAlert('🚨🚨 민서집 붕괴!! 김민서 대성통곡 🚨🚨');
         cameraShake();
-        setTimeout(cameraShake, 250);
+        setTimeout(cameraShake, 1000);
         SoundManager.siren();
         pushNews('속보: 민서집 완전히 무너지다...김민서 대성통곡');
         if (navigator.vibrate) navigator.vibrate([100,60,100,60,200]);
@@ -1292,7 +1279,7 @@ document.getElementById('randomNameBtn').addEventListener('click', ()=>{
 });
 function playEasterEggIntro(callback){
   const el = document.getElementById('easterEggIntro');
-  el.innerHTML = '<div id="eggAnimText">★ 전설의 태풍, 김민서 강림 ★<br/><span style="font-size:12px;color:#cbd5db;">(남자입니다)</span></div>';
+  el.innerHTML = '<div id="eggAnimText">★ 전설의 태풍, 김민서 강림 ★<br/><span style="font-size:12px;color:#cbd5db;"></span></div>';
   const icons = ['💪','⚡','🌪️','🔥'];
   for (let i=0;i<10;i++){
     const s = document.createElement('span');
