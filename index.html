@@ -149,6 +149,23 @@
   }
   #map.shake{ animation:cameraShake 0.4s ease; }
 
+  #easterEggIntro{
+    position:absolute; inset:0; z-index:1050; display:none; align-items:center; justify-content:center;
+    background:rgba(4,6,20,0.78); overflow:hidden;
+  }
+  #easterEggIntro.show{display:flex;}
+  #eggAnimText{
+    font-family:var(--font-display); font-weight:700; font-size:20px; color:#ffd6e8;
+    text-shadow:0 0 12px rgba(255,150,200,0.7); text-align:center; padding:0 24px;
+    animation:eggPulse 0.9s ease-in-out infinite;
+  }
+  @keyframes eggPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.06); } }
+  .eggFloat{
+    position:absolute; bottom:-24px; font-size:16px; opacity:0.9;
+    animation:eggFloatUp 1.7s ease-in forwards;
+  }
+  @keyframes eggFloatUp{ 0%{ transform:translateY(0) rotate(0deg); opacity:0.9; } 100%{ transform:translateY(-220px) rotate(20deg); opacity:0; } }
+
   #alertOverlay{
     position:absolute; inset:0; z-index:1100; display:none; align-items:center; justify-content:center;
     background:rgba(180,10,10,0.22); pointer-events:none;
@@ -234,6 +251,8 @@
     <span id="newsText"></span>
   </div>
 
+  <div id="easterEggIntro"></div>
+
   <div id="alertOverlay"><div id="alertBox">🚨 도시 초토화</div></div>
 
   <div id="minimapWrap" class="bracket-panel">
@@ -299,7 +318,7 @@
 const CONFIG = {
   MAX_POWER:100, START_POWER:32, OCEAN_RECOVERY_BASE:6, LAND_DECAY_BASE:8,
   WEAK_RATIO:0.15, WEAK_DEATH_SECONDS:10, DAMAGE_SCALE:0.16,
-  BASE_SPEED_PX:210, PLAY_ZOOM:6, CITY_HIT_RADIUS_MIN_M:32000, CITY_HIT_RADIUS_MAX_M:100000,
+  BASE_SPEED_PX:70, PLAY_ZOOM:6, CITY_HIT_RADIUS_MIN_M:32000, CITY_HIT_RADIUS_MAX_M:100000,
 };
 // 등급(열대저압부/태풍/강한 태풍 ...) 명칭 없이, 세력(0~100%)에 따라 매끄럽게 변하는 연속 스탯
 function stormStats(power){
@@ -317,6 +336,7 @@ function currentHitRadius(r){
   return CONFIG.CITY_HIT_RADIUS_MIN_M + (CONFIG.CITY_HIT_RADIUS_MAX_M - CONFIG.CITY_HIT_RADIUS_MIN_M) * r;
 }
 const RANDOM_NAMES = ["나비","매미","루사","차바","힌남노","독수리","송다","트라세","무란","콩레이","제비","곤파스"];
+const EASTER_EGG_NAME = "김민서"; // 이 이름으로 태풍을 만들면 특별 연출이 발동됨
 
 const CONTINENTS = [
   [[-165,68],[-165,60],[-140,60],[-130,55],[-125,49],[-124,40],[-117,32],[-106,31],[-97,26],[-97,18],
@@ -485,7 +505,7 @@ function cityColor(city){
 const NE_ASIA_CITIES = [
   // 한국
   {name:"부산",lat:35.18,lng:129.08,dmg:300},{name:"인천",lat:37.46,lng:126.70,dmg:260},
-  {name:"대구",lat:35.87,lng:128.60,dmg:220},{name:"대전",lat:36.35,lng:127.38,dmg:190},
+  {name:"민서집",lat:35.83,lng:128.55,dmg:90,forceLabel:true,small:true},{name:"대전",lat:36.35,lng:127.38,dmg:190},
   {name:"광주",lat:35.16,lng:126.85,dmg:190},{name:"울산",lat:35.54,lng:129.31,dmg:210},
   {name:"수원",lat:37.26,lng:127.01,dmg:180},{name:"창원",lat:35.23,lng:128.68,dmg:170},
   {name:"고양",lat:37.66,lng:126.83,dmg:160},{name:"성남",lat:37.44,lng:127.14,dmg:160},
@@ -631,6 +651,7 @@ const NE_ASIA_CITIES = [
 function mergeCities(base, extra){
   const merged = base.slice();
   for (const e of extra){
+    if (e.forceLabel){ merged.push(e); continue; } // 항상 포함 (이스터에그 등 특수 지점은 근처 중복이 있어도 유지)
     const dup = merged.some(c => map.distance([c.lat,c.lng],[e.lat,e.lng]) < 12000);
     if (!dup) merged.push(e);
   }
@@ -642,13 +663,14 @@ function rebuildCities(list){
   cityLayerGroup.clearLayers();
   cityRings = [];
   CITIES = list.map(c=>{
-    const marker = L.circleMarker([c.lat,c.lng], { radius: c.dmg>=200?5:3, color:'#ffd166', fillColor:'#ffd166', fillOpacity:0.9, weight:1.1, interactive:false }).addTo(cityLayerGroup);
-    if (c.dmg >= 160){
+    const baseRadius = c.small ? 3 : (c.dmg>=200?5:3);
+    const marker = L.circleMarker([c.lat,c.lng], { radius: baseRadius, color:'#ffd166', fillColor:'#ffd166', fillOpacity:0.9, weight:1.1, interactive:false }).addTo(cityLayerGroup);
+    if (c.dmg >= 160 || c.forceLabel){
       marker.bindTooltip(c.name, { permanent:true, direction:'top', className:'city-label', offset:[0,-4] });
     }
     // 최적화: 규모가 작은 도시는 점선 피해반경 원을 생략해 레이어 수를 줄임
     let ring = null;
-    if (c.dmg >= 130){
+    if (c.dmg >= 130 || c.forceLabel){
       ring = L.circle([c.lat,c.lng], { radius:CONFIG.CITY_HIT_RADIUS_MIN_M, color:'rgba(255,255,255,0.4)', weight:1, dashArray:'4,5', fill:false, interactive:false }).addTo(cityLayerGroup);
       cityRings.push(ring);
     }
@@ -885,6 +907,24 @@ const FLAVOR_NEWS = [
   "독도에 초거대 스타디움 개장",
   "5등급제, 이젠 1등급제로..."
 ];
+// ── 이스터에그: 태풍 이름이 "김민서"일 때 섞여 나오는 전용 드립성 뉴스 ──
+const MINSEO_NEWS = [
+  "속보: 김민서, 사실은 훈남이었다...전국이 충격",
+  "속보: '김민서'라는 이름, 여자 이름인 줄 알았던 사람들 대혼란",
+  "단독: 김민서, 알고 보니 상남자였다",
+  "속보: 민서집 주민들, 태풍 김민서 앞에서 떨고 있다",
+  "속보: 김민서, 오늘도 태풍처럼 등장",
+  "속보: 여론조사 결과 '김민서는 남자다' 응답률 89%",
+  "속보: 김민서, 이름값 못하고 힘만 세다는 평가",
+  "속보: 민서집, 방파제 신청했으나 정부 예산 부족으로 반려",
+  "속보: 김민서, 태풍계의 뉴페이스로 등극",
+  "속보: 김민서, 자기 집(민서집)부터 부순다는 소문 확산",
+  "속보: 오늘의 인물 '김민서' 선정...선정 이유는 아무도 모름",
+  "속보: '태풍 김민서' 실시간 검색어 1위 등극",
+  "속보: 김민서 별명, '태풍남'으로 잠정 확정",
+  "속보: 민서집 주민들, 대피 대신 구경 나와 눈총",
+  "속보: 김민서, 본인이 태풍인 줄도 모르고 산책 중이었다는 목격담",
+];
 function pushNews(text){ newsQueue.push(text); }
 function showNewsText(text){
   newsTextEl.classList.remove('fadein');
@@ -895,7 +935,14 @@ function showNewsText(text){
 function tickerUpdate(dt){
   newsTimer -= dt;
   if (newsTimer <= 0){
-    const next = newsQueue.length ? newsQueue.shift() : FLAVOR_NEWS[Math.floor(Math.random()*FLAVOR_NEWS.length)];
+    let next;
+    if (newsQueue.length){
+      next = newsQueue.shift();
+    } else if (world.name === EASTER_EGG_NAME && Math.random() < 0.4){
+      next = MINSEO_NEWS[Math.floor(Math.random()*MINSEO_NEWS.length)];
+    } else {
+      next = FLAVOR_NEWS[Math.floor(Math.random()*FLAVOR_NEWS.length)];
+    }
     showNewsText(next);
     newsTimer = NEWS_DISPLAY_TIME;
   }
@@ -963,11 +1010,28 @@ const SoundManager = (function(){
     osc.connect(gain); gain.connect(ctx.destination);
     osc.start(); osc.stop(ctx.currentTime+0.25);
   }
+  // 민서집 파괴 전용: 오르내리는 사이렌 경보음
+  function siren(){
+    if (!ctx) return;
+    const osc = ctx.createOscillator(); osc.type='sawtooth';
+    const gain = ctx.createGain(); gain.gain.value = 0.14;
+    osc.connect(gain); gain.connect(ctx.destination);
+    const t0 = ctx.currentTime;
+    for (let i=0;i<4;i++){
+      osc.frequency.setValueAtTime(500, t0 + i*0.5);
+      osc.frequency.linearRampToValueAtTime(900, t0 + i*0.5 + 0.25);
+      osc.frequency.linearRampToValueAtTime(500, t0 + i*0.5 + 0.5);
+    }
+    gain.gain.setValueAtTime(0.14, t0);
+    gain.gain.setValueAtTime(0.14, t0+1.9);
+    gain.gain.linearRampToValueAtTime(0.0001, t0+2.1);
+    osc.start(t0); osc.stop(t0+2.1);
+  }
   function stop(){
     if (windGain) windGain.gain.value = 0;
     started = false;
   }
-  return { start, setPower, boom, blip, stop };
+  return { start, setPower, boom, blip, siren, stop };
 })();
 
 // ── 카메라 흔들림 + 긴급 경보 오버레이 ──
@@ -1018,6 +1082,16 @@ function applyCityDamage(dt, stats, lat, lng){
       SoundManager.boom();
       if (combo.count >= 2) SoundManager.blip(880);
       if (navigator.vibrate) navigator.vibrate([40,30,40]);
+
+      // ── 이스터에그: 민서집이 파괴되면 특별 경보 발동 ──
+      if (c.name === '민서집'){
+        showAlert('🚨🚨 민서집 붕괴!! 김민서 대성통곡 🚨🚨');
+        cameraShake();
+        setTimeout(cameraShake, 250);
+        SoundManager.siren();
+        pushNews('속보: 민서집 완전히 무너지다...김민서 대성통곡');
+        if (navigator.vibrate) navigator.vibrate([100,60,100,60,200]);
+      }
     }
   }
 }
@@ -1216,17 +1290,42 @@ buildTyphoonSprite();
 document.getElementById('randomNameBtn').addEventListener('click', ()=>{
   nameInput.value = RANDOM_NAMES[Math.floor(Math.random()*RANDOM_NAMES.length)];
 });
+function playEasterEggIntro(callback){
+  const el = document.getElementById('easterEggIntro');
+  el.innerHTML = '<div id="eggAnimText">★ 전설의 태풍, 김민서 강림 ★<br/><span style="font-size:12px;color:#cbd5db;">(남자입니다)</span></div>';
+  const icons = ['💪','⚡','🌪️','🔥'];
+  for (let i=0;i<10;i++){
+    const s = document.createElement('span');
+    s.className = 'eggFloat';
+    s.textContent = icons[i % icons.length];
+    s.style.left = (8 + Math.random()*84) + '%';
+    s.style.animationDelay = (Math.random()*0.6) + 's';
+    el.appendChild(s);
+  }
+  el.classList.add('show');
+  setTimeout(()=>{ el.classList.remove('show'); callback(); }, 1800);
+}
+
 document.getElementById('toLocationBtn').addEventListener('click', ()=>{
   const v = nameInput.value.trim();
   world.name = v.length ? v.slice(0,10) : RANDOM_NAMES[Math.floor(Math.random()*RANDOM_NAMES.length)];
   document.getElementById('stormName').textContent = '태풍 ' + world.name;
   nameScreen.classList.add('hidden');
-  gameState = STATE.LOCATE;
-  locBanner.classList.add('show'); pendingStart=null;
-  locConfirmWrap.classList.remove('show'); locConfirmBtn.disabled=true;
-  locMsg.textContent = '🌊 실제 지도 위에서 태풍이 발생할 바다를 탭하세요 (드래그·핀치줌 가능)';
-  locMsg.className = 'msg';
-  map.setView([15,135], 3);
+
+  const proceedToLocate = ()=>{
+    gameState = STATE.LOCATE;
+    locBanner.classList.add('show'); pendingStart=null;
+    locConfirmWrap.classList.remove('show'); locConfirmBtn.disabled=true;
+    locMsg.textContent = '🌊 실제 지도 위에서 태풍이 발생할 바다를 탭하세요 (드래그·핀치줌 가능)';
+    locMsg.className = 'msg';
+    map.setView([15,135], 3);
+  };
+
+  if (world.name === EASTER_EGG_NAME){
+    playEasterEggIntro(proceedToLocate);
+  } else {
+    proceedToLocate();
+  }
 });
 map.on('click', (e)=>{
   if (gameState !== STATE.LOCATE) return;
