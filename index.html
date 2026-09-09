@@ -171,6 +171,7 @@
     background:rgba(180,10,10,0.22); pointer-events:none;
   }
   #alertOverlay.show{ display:flex; animation:alertFlash 0.55s ease; }
+  #alertOverlay.show.persist{ animation:none; opacity:1; }
   #alertBox{
     background:rgba(30,4,4,0.92); border:2px solid #ff2d2d; padding:10px 22px; text-align:center;
     font-family:var(--font-display); font-weight:700; color:#fff; font-size:14px; letter-spacing:0.02em;
@@ -336,7 +337,7 @@ function currentHitRadius(r){
   return CONFIG.CITY_HIT_RADIUS_MIN_M + (CONFIG.CITY_HIT_RADIUS_MAX_M - CONFIG.CITY_HIT_RADIUS_MIN_M) * r;
 }
 const RANDOM_NAMES = ["나비","매미","루사","차바","힌남노","독수리","송다","트라세","무란","콩레이","제비","곤파스"];
-const EASTER_EGG_NAME = "김민서"; // 이 이름으로 태풍을 만들면 특별 연출이 발동됨
+function isEasterEgg(name){ return name.indexOf('민서') !== -1; } // "민서"가 들어가면 발동
 
 const CONTINENTS = [
   [[-165,68],[-165,60],[-140,60],[-130,55],[-125,49],[-124,40],[-117,32],[-106,31],[-97,26],[-97,18],
@@ -505,7 +506,7 @@ function cityColor(city){
 const NE_ASIA_CITIES = [
   // 한국
   {name:"부산",lat:35.18,lng:129.08,dmg:300},{name:"인천",lat:37.46,lng:126.70,dmg:260},
-  {name:"민서집",lat:35.8241,lng:128.5303,dmg:90,forceLabel:true,small:true},{name:"대전",lat:36.35,lng:127.38,dmg:190},
+  {name:"대구",lat:35.83,lng:128.55,dmg:220},{name:"대전",lat:36.35,lng:127.38,dmg:190},
   {name:"광주",lat:35.16,lng:126.85,dmg:190},{name:"울산",lat:35.54,lng:129.31,dmg:210},
   {name:"수원",lat:37.26,lng:127.01,dmg:180},{name:"창원",lat:35.23,lng:128.68,dmg:170},
   {name:"고양",lat:37.66,lng:126.83,dmg:160},{name:"성남",lat:37.44,lng:127.14,dmg:160},
@@ -676,7 +677,9 @@ function rebuildCities(list){
     }
     return { name:c.name, lat:c.lat, lng:c.lng, cap:c.dmg, dealt:0, destroyed:false, marker, ring };
   });
+  specialCityRef = CITIES.find(c => c.name === '대구' || c.name === '민서집') || null;
 }
+let specialCityRef = null;
 let CITIES = [];
 rebuildCities(mergeCities(CITY_DATA.map(c=>({ ...c, dmg: Math.round(c.dmg*0.5) })), NE_ASIA_CITIES)); // 손으로 고른 도시 + 동북아 대량 도시로 즉시 플레이 가능하게 시작
 
@@ -907,11 +910,6 @@ const FLAVOR_NEWS = [
   "독도에 초거대 스타디움 개장",
   "5등급제, 이젠 1등급제로..."
 ];
-// ── 이스터에그: 태풍 이름이 "김민서"일 때 섞여 나오는 전용 드립성 뉴스 ──
-const MINSEO_NEWS = [
-
-  "속보: 김민서, 본인이 태풍인 줄도 모르고 산책 중이었다는 목격담",
-];
 function pushNews(text){ newsQueue.push(text); }
 function showNewsText(text){
   newsTextEl.classList.remove('fadein');
@@ -925,8 +923,6 @@ function tickerUpdate(dt){
     let next;
     if (newsQueue.length){
       next = newsQueue.shift();
-    } else if (world.name === EASTER_EGG_NAME && Math.random() < 0.4){
-      next = MINSEO_NEWS[Math.floor(Math.random()*MINSEO_NEWS.length)];
     } else {
       next = FLAVOR_NEWS[Math.floor(Math.random()*FLAVOR_NEWS.length)];
     }
@@ -1033,12 +1029,26 @@ function cameraShake(){
 const alertOverlay = document.getElementById('alertOverlay');
 const alertBox = document.getElementById('alertBox');
 let alertTimeout = null;
-function showAlert(text){
+let priorityAlertUntil = 0;
+function showAlert(text, priorityMs){
+  const now = Date.now();
+  if (now < priorityAlertUntil && !priorityMs) return; // 우선순위 경보가 떠 있는 동안은 일반 경보로 덮어쓰지 않음
   alertBox.textContent = text;
-  alertOverlay.classList.remove('show'); void alertOverlay.offsetWidth;
-  alertOverlay.classList.add('show');
   clearTimeout(alertTimeout);
-  alertTimeout = setTimeout(()=>alertOverlay.classList.remove('show'), 600);
+  if (priorityMs){
+    alertOverlay.classList.remove('show'); void alertOverlay.offsetWidth;
+    alertOverlay.classList.add('show'); alertOverlay.classList.add('persist');
+    priorityAlertUntil = now + priorityMs;
+    alertTimeout = setTimeout(()=>{
+      alertOverlay.classList.remove('show'); alertOverlay.classList.remove('persist');
+      priorityAlertUntil = 0;
+    }, priorityMs);
+  } else {
+    alertOverlay.classList.remove('persist');
+    alertOverlay.classList.remove('show'); void alertOverlay.offsetWidth;
+    alertOverlay.classList.add('show');
+    alertTimeout = setTimeout(()=>alertOverlay.classList.remove('show'), 600);
+  }
 }
 
 function applyCityDamage(dt, stats, lat, lng){
@@ -1072,11 +1082,11 @@ function applyCityDamage(dt, stats, lat, lng){
 
       // ── 이스터에그: 민서집이 파괴되면 특별 경보 발동 ──
       if (c.name === '민서집'){
-        showAlert('🚨🚨 민서집 붕괴!! 김민서 대성통곡 🚨🚨');
+        showAlert('🚨🚨 민서집 붕괴!! 🚨🚨', 10000);
         cameraShake();
-        setTimeout(cameraShake, 1000);
+        setTimeout(cameraShake, 250);
         SoundManager.siren();
-        pushNews('속보: 민서집 완전히 무너지다...김민서 대성통곡');
+        pushNews('속보: 민서집 완전히 무너지다');
         if (navigator.vibrate) navigator.vibrate([100,60,100,60,200]);
       }
     }
@@ -1279,7 +1289,7 @@ document.getElementById('randomNameBtn').addEventListener('click', ()=>{
 });
 function playEasterEggIntro(callback){
   const el = document.getElementById('easterEggIntro');
-  el.innerHTML = '<div id="eggAnimText">★ 전설의 태풍, 김민서 강림 ★<br/><span style="font-size:12px;color:#cbd5db;"></span></div>';
+  el.innerHTML = '<div id="eggAnimText">★ 전설의 태풍, 김민서 강림 ★</div>';
   const icons = ['💪','⚡','🌪️','🔥'];
   for (let i=0;i<10;i++){
     const s = document.createElement('span');
@@ -1308,7 +1318,7 @@ document.getElementById('toLocationBtn').addEventListener('click', ()=>{
     map.setView([15,135], 3);
   };
 
-  if (world.name === EASTER_EGG_NAME){
+  if (isEasterEgg(world.name)){
     playEasterEggIntro(proceedToLocate);
   } else {
     proceedToLocate();
@@ -1337,7 +1347,20 @@ locConfirmBtn.addEventListener('click', ()=>{
   world.power = CONFIG.START_POWER; world.weakTimer=0; world.elapsed=0; world.score=0;
   resetTrail();
   CITIES.forEach(c=>{ c.dealt=0; c.destroyed=false; c.protectedUntil=0; c.marker.setStyle({ color:'#ffd166', fillColor:'#ffd166' }); });
+  if (specialCityRef){
+    if (isEasterEgg(world.name)){
+      specialCityRef.name = '민서집';
+      specialCityRef.marker.setTooltipContent('민서집');
+      specialCityRef.marker.setRadius(3);
+    } else {
+      specialCityRef.name = '대구';
+      specialCityRef.marker.setTooltipContent('대구');
+      specialCityRef.marker.setRadius(specialCityRef.cap>=200?5:3);
+    }
+  }
   if (startMarker){ map.removeLayer(startMarker); startMarker=null; }
+  priorityAlertUntil = 0; clearTimeout(alertTimeout);
+  alertOverlay.classList.remove('show'); alertOverlay.classList.remove('persist');
   map.setView([pendingStart.lat, pendingStart.lng], CONFIG.PLAY_ZOOM, { animate:false });
   map.dragging.disable();
   locBanner.classList.remove('show'); locConfirmWrap.classList.remove('show');
