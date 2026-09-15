@@ -65,20 +65,44 @@
 
 
 
-  #playCustomControls{display:none;position:absolute;right:10px;top:118px;z-index:1100;width:190px;padding:9px;background:rgba(6,18,30,.92);border:1px solid rgba(255,179,71,.45);backdrop-filter:blur(5px);pointer-events:auto}
-  #playCustomControls.show{display:block}.play-custom-title{font-size:10px;color:var(--amber);font-weight:700;margin-bottom:7px}.play-custom-row{display:grid;grid-template-columns:38px 1fr 48px;gap:5px;align-items:center;margin:5px 0;font-size:10px;color:var(--text-dim)}.play-custom-row input[type=range]{width:100%}.play-custom-row input[type=number]{width:48px;box-sizing:border-box;padding:3px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);color:var(--text);font-size:10px}
-  #customControls{display:none;margin:10px 0 14px;padding:10px;border:1px solid rgba(255,179,71,.4);background:rgba(255,179,71,.06)}
-  #customControls.show{display:block}
-  .custom-title{font-size:11px;color:var(--amber);font-weight:700;margin-bottom:8px}
-  .custom-row{display:grid;grid-template-columns:52px 1fr 58px;gap:7px;align-items:center;margin:6px 0;font-size:11px;color:var(--text-dim)}
-  .custom-row input[type=range]{width:100%}
-  .custom-row input[type=number]{width:58px;padding:4px 3px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);color:var(--text);font-size:11px}
+  #playCustomControls{
+    display:none; position:absolute; right:10px; top:118px; z-index:1100; width:190px; padding:9px;
+    background:rgba(6,18,30,.92); border:1px solid rgba(255,179,71,.45); backdrop-filter:blur(5px); pointer-events:auto;
+  }
+  #playCustomControls.show{ display:block; }
+  .play-custom-title{ font-size:10px; color:var(--amber); font-weight:700; margin-bottom:7px; }
+  .play-custom-row{ display:grid; grid-template-columns:38px 1fr 48px; gap:5px; align-items:center; margin:5px 0; font-size:10px; color:var(--text-dim); }
+  .play-custom-row input[type=range]{ width:100%; }
+  .play-custom-row input[type=number]{
+    width:48px; box-sizing:border-box; padding:3px; background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.2); color:var(--text); font-size:10px;
+  }
+  #customControls{ display:none; margin:10px 0 14px; padding:10px; border:1px solid rgba(255,179,71,.4); background:rgba(255,179,71,.06); }
+  #customControls.show{ display:block; }
+  .custom-title{ font-size:11px; color:var(--amber); font-weight:700; margin-bottom:8px; }
+  .custom-row{ display:grid; grid-template-columns:52px 1fr 58px; gap:7px; align-items:center; margin:6px 0; font-size:11px; color:var(--text-dim); }
+  .custom-row input[type=range]{ width:100%; }
+  .custom-row input[type=number]{ width:58px; padding:4px 3px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.2); color:var(--text); font-size:11px; }
   #joystickZone{ position:absolute; left:0; bottom:0; width:46%; height:42%; display:none; z-index:900; touch-action:none; }
   #joystickZone.show{display:block;}
-  .landmark-label{background:rgba(6,18,30,.78)!important;border:1px solid rgba(255,179,71,.35)!important;color:#ffe1ad!important;font-size:9px!important;padding:1px 4px!important;border-radius:2px!important;box-shadow:none!important}.landmark-label:before{display:none!important}#customBadge{display:none;margin-top:5px;font-size:10px;color:#ffb347;letter-spacing:.04em}#customBadge.show{display:block}.joy-guide{position:absolute;inset:9px;border:1px dashed rgba(79,209,197,.2);border-radius:50%;pointer-events:none}.joy-cross-x,.joy-cross-y{position:absolute;background:rgba(79,209,197,.18);pointer-events:none}.joy-cross-x{left:15px;right:15px;top:50%;height:1px}.joy-cross-y{top:15px;bottom:15px;left:50%;width:1px}
 
-  #joyBase{ position:absolute; left:30px; bottom:30px; width:132px; height:132px; border-radius:50%;
-    background:radial-gradient(circle, rgba(79,209,197,0.18) 0 22%, rgba(79,209,197,0.07) 23% 52%, rgba(6,18,30,0.68) 100%); border:1px solid rgba(79,209,197,0.58); box-shadow:inset 0 0 0 5px rgba(79,209,197,.05),0 0 18px rgba(79,209,197,.10); }
+  .landmark-label{
+    background:rgba(6,18,30,.78)!important; border:1px solid rgba(255,179,71,.35)!important; color:#ffe1ad!important;
+    font-size:9px!important; padding:1px 4px!important; border-radius:2px!important; box-shadow:none!important;
+  }
+  .landmark-label::before{ display:none!important; }
+  #customBadge{ display:none; margin-top:5px; font-size:10px; color:#ffb347; letter-spacing:.04em; }
+  #customBadge.show{ display:block; }
+  .joy-guide{ position:absolute; inset:9px; border:1px dashed rgba(79,209,197,.2); border-radius:50%; pointer-events:none; }
+  .joy-cross-x, .joy-cross-y{ position:absolute; background:rgba(79,209,197,.18); pointer-events:none; }
+  .joy-cross-x{ left:15px; right:15px; top:50%; height:1px; }
+  .joy-cross-y{ top:15px; bottom:15px; left:50%; width:1px; }
+
+  #joyBase{
+    position:absolute; left:30px; bottom:30px; width:132px; height:132px; border-radius:50%;
+    background:radial-gradient(circle, rgba(79,209,197,0.18) 0 22%, rgba(79,209,197,0.07) 23% 52%, rgba(6,18,30,0.68) 100%);
+    border:1px solid rgba(79,209,197,0.58); box-shadow:inset 0 0 0 5px rgba(79,209,197,.05), 0 0 18px rgba(79,209,197,.10);
+  }
   #joyKnob{ position:absolute; left:50%; top:50%; width:58px; height:58px; border-radius:50%;
     background:radial-gradient(circle at 35% 30%, rgba(232,241,242,0.95), rgba(79,209,197,0.55));
     transform:translate(-50%,-50%); box-shadow:0 0 12px rgba(79,209,197,0.5); }
@@ -190,6 +214,22 @@
   }
   @keyframes alertFlash{ 0%{opacity:0;} 20%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;} }
 
+  #achievementToast{
+    position:absolute; top:40px; left:50%; transform:translateX(-50%); z-index:960;
+    display:flex; flex-direction:column; align-items:center; gap:6px; pointer-events:none;
+  }
+  .achv-pop{
+    background:rgba(30,20,4,0.92); border:1px solid var(--amber); color:var(--amber);
+    padding:8px 16px; font-size:12px; font-weight:700; letter-spacing:0.02em;
+    animation:achvPop 3s ease forwards;
+  }
+  @keyframes achvPop{
+    0%{ opacity:0; transform:translateY(-10px) scale(0.9); }
+    12%{ opacity:1; transform:translateY(0) scale(1); }
+    85%{ opacity:1; }
+    100%{ opacity:0; transform:translateY(-6px); }
+  }
+
   #resultScreen .result-title{ font-family:var(--font-display); font-weight:700; font-size:30px; margin-bottom:4px; }
   #resultScreen .result-title.win{ color:var(--amber); }
   #resultScreen .result-title.lose{ color:var(--text-dim); }
@@ -291,9 +331,13 @@
       </svg>
     </div>
     <div id="compassDist">-- km</div>
+    <div id="destroyProgressLabel" style="font-size:9px;color:var(--text-dim);margin-top:6px;">파괴율 0%</div>
+    <div style="width:100%;height:5px;background:rgba(255,255,255,0.12);margin-top:2px;">
+      <div id="destroyProgressBar" style="height:100%;width:0%;background:var(--red);transition:width 0.3s;"></div>
+    </div>
   </div>
 
-  <div id="joystickZone"><div id="joyBase"><div id="joyKnob"></div></div></div>
+  <div id="joystickZone"><div id="joyBase"><div class="joy-guide"></div><div class="joy-cross-x"></div><div class="joy-cross-y"></div><div id="joyKnob"></div></div></div>
 
   <div class="screen" id="nameScreen">
     <h1 class="title-main">태풍 키우기</h1>
@@ -309,10 +353,12 @@
         <div class="custom-row"><span>빠르기</span><input id="customSpeedRange" type="range" min="0.1" max="100" step="0.1" value="1"><input id="customSpeed" type="number" min="0.1" max="100" step="0.1" value="1"></div>
         <div class="custom-row"><span>피해범위</span><input id="customRadiusRange" type="range" min="0.1" max="100" step="0.1" value="1"><input id="customRadius" type="number" min="0.1" max="100" step="0.1" value="1"></div>
       </div>
-      <div class="hint-names">숨겨진 룰: 관리자 / 개발자 / 폭풍신 / 미니태풍 / 거대태풍<br>이름이 떠오르지 않나요?<button id="randomNameBtn">추천 이름 받기</button></div>
+      <div class="hint-names">숨겨진 룰: MinSeo<br>이름이 떠오르지 않나요?<button id="randomNameBtn">추천 이름 받기</button></div>
       <button class="primary-btn" id="toLocationBtn">다음</button>
     </div>
   </div>
+
+  <div id="achievementToast"></div>
 
   <div class="screen hidden" id="resultScreen">
     <div class="card bracket-panel">
@@ -323,8 +369,10 @@
       <div class="stat-row"><span>파괴한 도시</span><span id="statCities">0곳</span></div>
       <div class="stat-row"><span>최대 풍속</span><span id="statRank">-- km/h</span></div>
       <div class="stat-row"><span>생존 시간</span><span id="statTime">0초</span></div>
+      <div id="achievementList" style="margin-top:10px; font-size:11px; color:var(--amber);"></div>
       <button class="primary-btn" id="retryBtn" style="margin-top:18px;">다시 도전</button>
       <button class="ghost-btn" id="viewTrackBtn">🗺️ 이동 경로 보기</button>
+      <button class="ghost-btn" id="copyResultBtn">📋 결과 복사하기</button>
     </div>
   </div>
   <button id="backToResultBtn">결과로 돌아가기</button>
@@ -352,7 +400,7 @@ const CONFIG = {
 // 등급(열대저압부/태풍/강한 태풍 ...) 명칭 없이, 세력(0~100%)에 따라 매끄럽게 변하는 연속 스탯
 function stormStats(power){
   const r=Math.max(0,Math.min(1,power/CONFIG.MAX_POWER)), cr=world.customRules||DEFAULT_CUSTOM_RULES;
-  return {r,speedMul:(0.75+r*0.65)*cr.speed,sizeMul:(0.72+r*0.66)*cr.size,spin:Math.max(1.2,(9-r*4.5)/cr.spin),dmgMul:(0.5+r*2.0)*cr.strength,windKmh:Math.round((30+r*250)*cr.wind)};
+  return {r,speedMul:(0.75+r*0.65)*cr.speed,sizeMul:(0.72+r*0.66)*cr.size,spin:Math.max(1.2,(9-r*4.5)/cr.speed),dmgMul:(0.5+r*2.0)*cr.strength,windKmh:Math.round((30+r*250)*cr.wind)};
 }
 function currentHitRadius(r){
   const base=CONFIG.CITY_HIT_RADIUS_MIN_M + (CONFIG.CITY_HIT_RADIUS_MAX_M - CONFIG.CITY_HIT_RADIUS_MIN_M) * r;
@@ -360,15 +408,22 @@ function currentHitRadius(r){
   return base*mul;
 }
 const RANDOM_NAMES = ["나비","매미","루사","차바","힌남노","독수리","송다","트라세","무란","콩레이","제비","곤파스"];
-function isMinSeo(name){ return name === 'MinSeo'; }
+// "민서"가 이름에 포함되면 발동하는 도시 이스터에그(대구→민서집)와, 정해진 치트 단어로 여는 커스텀 룰 모드는
+// 서로 다른 기능이라 별도 함수로 분리한다.
+function isMinseoCity(name){ return name.indexOf('민서') !== -1; }
+// 숨겨진 치트 단어별 기본 프리셋 (단어를 처음 입력한 순간 슬라이더에 이 값이 세팅되고, 이후엔 직접 조정 가능)
+const CUSTOM_PRESETS = {
+  'MinSeo': { speed:1, size:1, strength:1, radius:1, label:'MinSeo' },
+};
+function isCustomTrigger(name){ return Object.prototype.hasOwnProperty.call(CUSTOM_PRESETS, name); }
 const DEFAULT_CUSTOM_RULES={speed:1,size:1,strength:1,wind:1,radius:1,recovery:1,label:''};
 function getCustomRules(name){
-  if(!isMinSeo(name)) return {...DEFAULT_CUSTOM_RULES};
+  if(!isCustomTrigger(name)) return {...DEFAULT_CUSTOM_RULES};
   const strength=Math.max(0.1,Math.min(100,Number(document.getElementById('customStrength')?.value)||1));
   const size=Math.max(0.1,Math.min(100,Number(document.getElementById('customSize')?.value)||1));
   const speed=Math.max(0.1,Math.min(100,Number(document.getElementById('customSpeed')?.value)||1));
   const radius=Math.max(0.1,Math.min(100,Number(document.getElementById('customRadius')?.value)||1));
-  return {speed,size,strength,wind:strength,radius,recovery:1,label:'MinSeo'};
+  return {speed,size,strength,wind:strength,radius,recovery:1,label:CUSTOM_PRESETS[name].label};
 }
 
 const CONTINENTS = [
@@ -505,6 +560,24 @@ function terrainMultiplier(lon, lat){
   return 1.0;
 }
 function seaTempMultiplier(lat){ const a=Math.abs(lat); if (a<20) return 1.5; if (a<40) return 1.0; return 0.35; }
+
+// ── 웜풀(고수온) 보너스 해역: 실제 태풍이 잘 발달하는 난류 해역을 흉내낸 특별 구역 ──
+// 지나가면 세력 회복량이 크게 늘어난다 (전략적으로 들를 만한 지점)
+const WARM_POOLS = [
+  { name:"쿠로시오 난류", lat:24, lng:132, radius:900000 },
+  { name:"필리핀해 웜풀", lat:12, lng:138, radius:1000000 },
+  { name:"멕시코만류", lat:25, lng:-88, radius:700000 },
+  { name:"카리브해 웜풀", lat:16, lng:-72, radius:700000 },
+  { name:"벵골만 웜풀", lat:14, lng:88, radius:700000 },
+];
+function warmPoolMultiplier(lat, lng){
+  for (const wp of WARM_POOLS){
+    const d = map.distance([lat,lng], [wp.lat, wp.lng]);
+    if (d < wp.radius) return { mul: 1.8, zone: wp.name };
+  }
+  return { mul: 1, zone: null };
+}
+
 
 const map = L.map('map', {
   zoomControl:false, attributionControl:true, worldCopyJump:true,
@@ -833,6 +906,14 @@ function drawMinimap(lat, lng){
 
 const LANDMARK_DATA=`후지산,35.36,138.73;도쿄타워,35.6586,139.7454;도쿄스카이트리,35.7101,139.8107;오사카성,34.6873,135.5262;교토역,34.9858,135.7588;히메지성,34.8394,134.6939;히로시마평화공원,34.3927,132.4523;나고야성,35.1856,136.8997;삿포로시계탑,43.062,141.3544;서울타워,37.5512,126.9882;경복궁,37.5796,126.977;롯데월드타워,37.5126,127.1025;인천대교,37.4144,126.603;해운대,35.1587,129.1604;광안대교,35.1532,129.1187;한라산,33.3617,126.5292;불국사,35.79,129.332;전주한옥마을,35.815,127.153;상하이타워,31.2336,121.5055;동방명주,31.2397,121.4999;자금성,39.9163,116.3972;만리장성,40.4319,116.5704;광저우타워,23.1066,113.3245;홍콩빅토리아피크,22.2759,114.1455;타이베이101,25.0339,121.5645;중정기념당,25.0347,121.5219;하노이호안끼엠,21.0285,105.8522;호치민노트르담,10.7798,106.699;하롱베이,20.9101,107.1839;앙코르와트,13.4125,103.867;방콕왕궁,13.75,100.4913;싱가포르마리나베이,1.2868,103.8545;페트로나스타워,3.1579,101.7116;보로부두르,-7.6079,110.2038;발리타나롯,-8.5069,115.2625;마닐라인트라무로스,14.5906,120.975;세부마젤란십자가,10.293,123.902;다바오피플스파크,7.0731,125.6128;타지마할,27.1751,78.0421;뭄바이게이트웨이,18.922,72.8347;콜카타빅토리아,22.5448,88.3426;다카국회의사당,23.7625,90.379;부르즈칼리파,25.1972,55.2744;팜아일랜드,25.1124,55.139;하기아소피아,41.0086,28.9802;카파도키아,38.6431,34.8289;페트라,30.3285,35.4444;시드니오페라하우스,-33.8568,151.2153;시드니하버브리지,-33.8523,151.2108;멜버른플린더스,-37.8183,144.9671;브리즈번사우스뱅크,-27.4746,153.0187;울루루,-25.3444,131.0369;오클랜드스카이타워,-36.8485,174.7633;웰링턴케이블카,-41.2865,174.7762;그레이트배리어리프,-18.2871,147.6992;와이키키,21.2793,-157.829;뉴욕자유의여신상,40.6892,-74.0445;엠파이어스테이트,40.7484,-73.9857;워싱턴국회의사당,38.8899,-77.0091;시카고윌리스타워,41.8789,-87.6359;금문교,37.8199,-122.4783;그리피스천문대,34.1184,-118.3004;라스베이거스,36.1147,-115.1728;마이애미사우스비치,25.7826,-80.13;뉴올리언스프렌치쿼터,29.9584,-90.0644;휴스턴우주센터,29.5513,-95.0978;치첸이트사,20.6843,-88.5678;멕시코시티소칼로,19.4326,-99.1332;파나마운하,9.08,-79.68;카르타헤나성벽,10.4236,-75.548;리우예수상,-22.9519,-43.2105;상파울루파울리스타,-23.5614,-46.656;부에노스아이레스오벨리스크,-34.6037,-58.3816;산티아고산크리스토발,-33.4378,-70.634;갈라파고스,-.9538,-90.9656;아마존마나우스,-3.119,-60.0217;런던빅벤,51.5007,-.1246;파리에펠탑,48.8584,2.2945;로마콜로세움,41.8902,12.4922;아테네아크로폴리스,37.9715,23.7257;사그라다파밀리아,41.4036,2.1744;암스테르담운하,52.3676,4.9041;베를린브란덴부르크문,52.5163,13.3777;모스크바크렘린,55.752,37.6175;상트페테르부르크,59.9343,30.3351;레이캬비크할그림,64.1419,-21.9266;카이로피라미드,29.9792,31.1342;나이로비국립공원,-1.3733,36.8589;빅토리아폭포,-17.9243,25.8572;케이프타운테이블마운틴,-33.9628,18.4098;잔지바르스톤타운,-6.1659,39.2026;말레,4.1755,73.5093;포트루이스,-20.1609,57.5012;세이셸빅토리아,-4.6191,55.4513;마추픽추,-13.1631,-72.545;이스터섬,-27.1127,-109.3497`.split(';').map(x=>{const a=x.split(',');return[a[0],+a[1],+a[2]]});
 const landmarkLayerGroup=L.layerGroup().addTo(map);LANDMARK_DATA.slice(0,CONFIG.LANDMARK_COUNT).forEach(d=>{const m=L.circleMarker([d[1],d[2]],{radius:3,color:'#ffb347',fillColor:'#ffb347',fillOpacity:.9,weight:1,interactive:false,renderer:map.options.renderer}).addTo(landmarkLayerGroup);m.bindTooltip(d[0],{direction:'top',className:'landmark-label',offset:[0,-4]})});
+
+// 웜풀(고수온) 보너스 해역 시각화
+const warmPoolLayerGroup = L.layerGroup().addTo(map);
+WARM_POOLS.forEach(wp=>{
+  L.circle([wp.lat,wp.lng], { radius:wp.radius, color:'rgba(255,140,60,0.55)', weight:1.5, dashArray:'6,6', fillColor:'rgba(255,140,60,0.10)', fillOpacity:1, interactive:false }).addTo(warmPoolLayerGroup);
+  L.marker([wp.lat,wp.lng], { icon:L.divIcon({html:'🌡️', className:'', iconSize:[18,18], iconAnchor:[9,9]}), interactive:false })
+    .addTo(warmPoolLayerGroup).bindTooltip(wp.name, { permanent:true, direction:'top', className:'landmark-label', offset:[0,-8] });
+});
 const joystickZone = document.getElementById('joystickZone');
 const joyBase = document.getElementById('joyBase');
 const joyKnob = document.getElementById('joyKnob');
@@ -874,6 +955,7 @@ window.addEventListener('blur', ()=>{ heldKeys.clear(); recalcKeyInput(); });
 const STATE = { NAME:'name', LOCATE:'locate', PLAYING:'playing', PAUSED:'paused', RESULT:'result' };
 let gameState = STATE.NAME;
 const world = { power:CONFIG.START_POWER, weakTimer:0, elapsed:0, score:0, name:'', customRules:{...DEFAULT_CUSTOM_RULES}, customLabel:'' };
+let lastWarmPoolZone = null;
 let stormLatLng = null; // 핀치줌/휠줌은 화면상 손가락 위치를 중심으로 확대되므로, 태풍의 "진짜" 좌표를 따로 기억해뒀다가 줌이 끝나면 다시 그 위치로 지도를 되돌린다
 let pendingStart = null, trailTick = 0, compassTick = 0, ringTick = 0, forecastTick = 0, minimapTick = 0, breakwaterTick = 0, damageTick = 0, hudTick = 0;
 // 최적화: 도시가 수백 개라 매 프레임 원 반경을 갱신하면 부담이 크므로 0.5초 간격으로만 갱신
@@ -1153,6 +1235,35 @@ function updateHUD(){
   lastPowerBucket = bucket;
 }
 
+// ── 업적 시스템 ──
+const ACHIEVEMENTS = [
+  { id:'first_kill', label:'🏅 첫 도시 파괴', check: (d)=> d >= 1 },
+  { id:'combo5', label:'🔥 콤보 5 연속 파괴', check: ()=> combo.count >= 5 },
+  { id:'warmpool', label:'🌡️ 웜풀 해역 진입', check: ()=> lastWarmPoolZone !== null || warmPoolVisited },
+  { id:'super', label:'🌪️ 초강력 세력 도달', check: ()=> world.power/CONFIG.MAX_POWER >= 0.95 },
+  { id:'ten_cities', label:'💥 10곳 이상 초토화', check: (d)=> d >= 10 },
+];
+let unlockedAchievements = new Set();
+let warmPoolVisited = false;
+function checkAchievements(destroyedN){
+  for (const a of ACHIEVEMENTS){
+    if (unlockedAchievements.has(a.id)) continue;
+    if (a.check(destroyedN)){
+      unlockedAchievements.add(a.id);
+      showAchievementPopup(a.label);
+    }
+  }
+}
+function showAchievementPopup(label){
+  const layer = document.getElementById('achievementToast');
+  const el = document.createElement('div');
+  el.className = 'achv-pop';
+  el.textContent = '업적 달성: ' + label;
+  layer.appendChild(el);
+  setTimeout(()=>el.remove(), 3000);
+  if (navigator.vibrate) navigator.vibrate(50);
+}
+
 function updateCompass(){
   let nearest = null, nearestDist = Infinity;
   const here = map.getCenter();
@@ -1161,8 +1272,14 @@ function updateCompass(){
     const d = map.distance(here, [c.lat, c.lng]);
     if (d < nearestDist){ nearestDist = d; nearest = c; }
   }
+  const destroyedN = CITIES.filter(c=>c.destroyed).length;
+  const pct = CITIES.length ? Math.round(destroyedN/CITIES.length*100) : 0;
+  document.getElementById('destroyProgressLabel').textContent = `파괴율 ${pct}% (${destroyedN}/${CITIES.length})`;
+  document.getElementById('destroyProgressBar').style.width = pct+'%';
+  checkAchievements(destroyedN);
+
   const wrap = document.getElementById('compassWrap');
-  if (!nearest){ wrap.classList.remove('show'); return; }
+  if (!nearest){ wrap.classList.add('show'); return; }
   wrap.classList.add('show');
   const toRad = d=>d*Math.PI/180;
   const lat1=toRad(here.lat), lat2=toRad(nearest.lat), dLon=toRad(nearest.lng-here.lng);
@@ -1194,6 +1311,11 @@ function endGame(win, reason){
   document.getElementById('statCities').textContent = destroyedCount+'곳';
   document.getElementById('statRank').textContent = stats.windKmh + ' km/h';
   document.getElementById('statTime').textContent = Math.floor(world.elapsed)+'초';
+  const achvListEl = document.getElementById('achievementList');
+  const unlockedLabels = ACHIEVEMENTS.filter(a=>unlockedAchievements.has(a.id)).map(a=>a.label);
+  achvListEl.innerHTML = unlockedLabels.length
+    ? '달성 업적: ' + unlockedLabels.join(' · ')
+    : '';
   document.getElementById('resultScreen').classList.remove('hidden');
 }
 let lastTime = performance.now();
@@ -1227,7 +1349,13 @@ function loop(now){
       world.power -= CONFIG.LAND_DECAY_BASE*tm*dt;
     } else {
       const sm = seaTempMultiplier(lat);
-      world.power += CONFIG.OCEAN_RECOVERY_BASE*sm*dt*(world.customRules?.recovery||1);
+      const wp = warmPoolMultiplier(lat, lng);
+      world.power += CONFIG.OCEAN_RECOVERY_BASE*sm*wp.mul*dt*(world.customRules?.recovery||1);
+      if (wp.zone && wp.zone !== lastWarmPoolZone){
+        pushNews(`속보: 태풍 ${world.name}, ${wp.zone} 진입...세력 급속 강화 예상`);
+      }
+      if (wp.zone) warmPoolVisited = true;
+      lastWarmPoolZone = wp.zone;
     }
     // 육지/바다 여부와 상관없이, 태풍의 영향 반경 안에 도시가 들어오면 항상 피해를 입힌다.
     // (예전에는 태풍이 "육지 위"에 있을 때만 피해가 들어가서, 해안선 데이터 해상도 때문에
@@ -1255,9 +1383,20 @@ const nameInput = document.getElementById('nameInput');
 nameInput.addEventListener('keydown', e=>{ if (e.key==='Enter') document.getElementById('toLocationBtn').click(); });
 const customControls=document.getElementById('customControls');
 function syncCustomControl(id, value){ const el=document.getElementById(id), range=document.getElementById(id+'Range'); el.value=value; range.value=value; }
+let lastCustomTrigger=null;
 function refreshCustomControls(){
-  const on=isMinSeo(nameInput.value.trim()); customControls.classList.toggle('show',on);
-  if(on){ syncCustomControl('customStrength',document.getElementById('customStrength').value||1); syncCustomControl('customSize',document.getElementById('customSize').value||1); syncCustomControl('customSpeed',document.getElementById('customSpeed').value||1); syncCustomControl('customRadius',document.getElementById('customRadius').value||1); }
+  const key = nameInput.value.trim();
+  const on = isCustomTrigger(key);
+  customControls.classList.toggle('show',on);
+  if(on && key!==lastCustomTrigger){
+    // 치트 단어를 새로 입력한 순간에만 프리셋 값으로 세팅 (이후엔 사용자가 직접 조정한 값 유지)
+    const p = CUSTOM_PRESETS[key];
+    syncCustomControl('customStrength', p.strength);
+    syncCustomControl('customSize', p.size);
+    syncCustomControl('customSpeed', p.speed);
+    syncCustomControl('customRadius', p.radius);
+  }
+  lastCustomTrigger = on ? key : null;
 }
 ['Strength','Size','Speed','Radius'].forEach(k=>{
   const range=document.getElementById('custom'+k+'Range'), num=document.getElementById('custom'+k);
@@ -1281,7 +1420,7 @@ function setPlayCustom(key,value){
   document.getElementById('play'+k).addEventListener('input',e=>setPlayCustom(k,e.target.value));
 });
 function syncPlayCustom(){
-  const on=isMinSeo(world.name); playCustomControls.classList.toggle('show',on);
+  const on=isCustomTrigger(world.name); playCustomControls.classList.toggle('show',on);
   if(on){ ['Strength','Size','Speed','Radius'].forEach(k=>{ const v=world.customRules?.[k.toLowerCase()]||1; document.getElementById('play'+k).value=v; document.getElementById('play'+k+'Range').value=v; }); }
 }
 
@@ -1388,7 +1527,11 @@ document.getElementById('toLocationBtn').addEventListener('click', ()=>{
     map.setView([15,135], 3);
   };
 
-  proceedToLocate();
+  if (isMinseoCity(world.name)){
+    playEasterEggIntro(proceedToLocate);
+  } else {
+    proceedToLocate();
+  }
 });
 map.on('click', (e)=>{
   if (gameState !== STATE.LOCATE) return;
@@ -1411,10 +1554,11 @@ map.on('click', (e)=>{
 locConfirmBtn.addEventListener('click', ()=>{
   if (!pendingStart) return;
   world.power = CONFIG.START_POWER; world.weakTimer=0; world.elapsed=0; world.score=0; damageTick=0; hudTick=0; smoothInput.x=0; smoothInput.y=0; joyEnd();
+  unlockedAchievements = new Set(); warmPoolVisited = false; lastWarmPoolZone = null;
   resetTrail();
   CITIES.forEach(c=>{ c.dealt=0; c.destroyed=false; c.protectedUntil=0; c.marker.setStyle({ color:'#ffd166', fillColor:'#ffd166' }); });
   if (specialCityRef){
-    if (isMinSeo(world.name)){
+    if (isMinseoCity(world.name)){
       specialCityRef.name = '민서집';
       specialCityRef.marker.setTooltipContent('민서집');
       specialCityRef.marker.setRadius(3);
@@ -1452,12 +1596,40 @@ document.getElementById('resumeBtn').addEventListener('click', ()=>{
   pauseScreen.classList.add('hidden'); lastTime = performance.now(); gameState = STATE.PLAYING;
   SoundManager.setPower(stormStats(world.power).r);
 });
+window.addEventListener('keydown', e=>{
+  if (e.key !== 'Escape') return;
+  if (gameState === STATE.PLAYING){
+    gameState = STATE.PAUSED; pauseScreen.classList.remove('hidden'); SoundManager.setPower(0);
+  } else if (gameState === STATE.PAUSED){
+    pauseScreen.classList.add('hidden'); lastTime = performance.now(); gameState = STATE.PLAYING;
+    SoundManager.setPower(stormStats(world.power).r);
+  }
+});
 document.getElementById('quitBtn').addEventListener('click', resetToTitle);
 document.getElementById('retryBtn').addEventListener('click', resetToTitle);
 document.getElementById('viewTrackBtn').addEventListener('click', ()=>{
   resultScreen.classList.add('inspecting');
   document.getElementById('backToResultBtn').classList.add('show');
   if (trackPoints.length) map.fitBounds(L.polyline(trackPoints).getBounds(), { padding:[40,40] });
+});
+document.getElementById('copyResultBtn').addEventListener('click', ()=>{
+  const destroyedCount = CITIES.filter(c=>c.destroyed).length;
+  const unlockedLabels = ACHIEVEMENTS.filter(a=>unlockedAchievements.has(a.id)).map(a=>a.label);
+  const text = [
+    `🌀 태풍 ${world.name} 결과`,
+    `피해 점수: ${Math.floor(world.score).toLocaleString()}`,
+    `파괴한 도시: ${destroyedCount}곳`,
+    `최대 풍속: ${document.getElementById('statRank').textContent}`,
+    `생존 시간: ${document.getElementById('statTime').textContent}`,
+    unlockedLabels.length ? `달성 업적: ${unlockedLabels.join(', ')}` : null,
+  ].filter(Boolean).join('\n');
+  const btn = document.getElementById('copyResultBtn');
+  const done = ()=>{ const orig = btn.textContent; btn.textContent = '✅ 복사됨!'; setTimeout(()=>btn.textContent = orig, 1500); };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(()=>{ prompt('아래 텍스트를 복사하세요:', text); });
+  } else {
+    prompt('아래 텍스트를 복사하세요:', text);
+  }
 });
 document.getElementById('backToResultBtn').addEventListener('click', ()=>{
   resultScreen.classList.remove('inspecting');
