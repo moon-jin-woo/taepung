@@ -737,6 +737,20 @@ function mpLeave(){
   if (!mpReady) return;
   playersRef.child(myPlayerId).remove();
 }
+
+// 게임이 소멸(사망)하면 이번 판의 도시 피해 누적치를 전부 초기화한다.
+// 멀티플레이 서버의 도시 기여 데이터도 함께 비워서, 다음 판에는 모든 도시가 다시 살아난다.
+function resetCitiesAfterDeath(){
+  for (const c of CITIES){
+    c.dealt = 0;
+    c.destroyed = false;
+    c.protectedUntil = 0;
+    c.marker.setStyle({ color:'#ffd166', fillColor:'#ffd166' });
+  }
+  if (mpReady){
+    citiesRef.remove().catch(e=>console.warn('도시 상태 초기화 실패:', e));
+  }
+}
 let mpBroadcastTick = 0;
 function mpBroadcastPosition(dt, stats){
   if (!mpReady || !stormLatLng) return;
@@ -1443,6 +1457,8 @@ function updateCompass(){
 function endGame(win, reason){
   gameState = STATE.RESULT;
   mpLeave();
+  // 패배/소멸 시에만 도시 상태를 즉시 초기화한다.
+  if (!win) resetCitiesAfterDeath();
   document.getElementById('hud').classList.remove('show');
   joystickZone.classList.remove('show');
   document.getElementById('typhoonSprite').classList.remove('show');
