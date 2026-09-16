@@ -290,6 +290,7 @@
     <div id="hudLeft" class="bracket-panel">
       <div class="tl"></div><div class="tr"></div><div class="bl"></div><div class="br"></div>
       <div id="stormName">태풍 —</div><div id="customBadge">⚙ CUSTOM RULE</div>
+      <div id="onlineCountLabel" style="font-size:10px;color:var(--text-dim);margin-top:2px;">🌐 온라인 1명</div>
       <div id="rankLabel">최대풍속 -- km/h</div>
       <div id="powerBarOuter"><div id="powerBarInner"></div></div>
       <div id="powerText">세력 32%</div>
@@ -399,6 +400,21 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script>
+  // 실시간 멀티플레이용 Firebase 초기화
+  const firebaseConfig = {
+    apiKey: "AIzaSyBNIQdhVwTskmxsc_eof0hIsx1K4E92OHQ",
+    authDomain: "taepung-1a4d3.firebaseapp.com",
+    databaseURL: "https://taepung-1a4d3-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "taepung-1a4d3",
+    storageBucket: "taepung-1a4d3.firebasestorage.app",
+    messagingSenderId: "420719974387",
+    appId: "1:420719974387:web:a1f658bc9b5ca4392f2486"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
 <script>
 (function(){
 "use strict";
@@ -617,6 +633,129 @@ function cityColor(city){
   if (city.destroyed) return '#4b4b4b';
   const ratio = city.dealt/city.cap;
   if (ratio<0.34) return '#ffd166'; if (ratio<0.7) return '#ff9d4a'; return '#ff5a3c';
+}
+
+// ══════════════════════════════════════════════════════════════
+// 실시간 멀티플레이 (Firebase Realtime Database)
+// - 모두가 같은 "global" 방에 들어가는 단순한 구조 (방 코드 없음)
+// - 각자 자기 위치/세력만 자기 경로에 쓰고, 다른 플레이어 경로를 구독해서 "유령 태풍"으로 그림
+// - 도시 피해는 "플레이어별 기여량"을 각자 자기 키에만 쓰고, 합산은 클라이언트에서 함
+//   (이렇게 하면 여러 명이 동시에 같은 도시를 때려도 경쟁 조건 없이 정확히 누적됨)
+// ══════════════════════════════════════════════════════════════
+let mpReady = false;
+let mpDb = null, roomRef = null, playersRef = null, citiesRef = null;
+const myPlayerId = 'p_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+const myColor = '#' + ['ff6b6b','4fd1c5','ffd166','9b8cff','5ad1a5','ff9de2'][Math.floor(Math.random()*6)];
+function mpCityKey(name){ return name.replace(/[.#$\/\[\]]/g, '_'); }
+
+try{
+  mpDb = firebase.database();
+  roomRef = mpDb.ref('rooms/global');
+  playersRef = roomRef.child('players');
+  citiesRef = roomRef.child('cities');
+  mpReady = true;
+}catch(e){
+  console.warn('멀티플레이 서버 연결 실패, 싱글플레이로만 진행합니다.', e);
+}
+
+const remotePlayers = {}; // playerId -> { marker, tooltip, lat, lng, targetLat, targetLng, power }
+let onlineCount = 0;
+
+function ghostIcon(color){
+  return L.divIcon({
+    html: `<div style="width:16px;height:16px;border-radius:50%;background:${color};border:2px solid rgba(255,255,255,0.85);box-shadow:0 0 8px ${color};opacity:0.85;"></div>`,
+    className:'', iconSize:[16,16], iconAnchor:[8,8]
+  });
+}
+
+if (mpReady){
+  playersRef.on('value', snap=>{
+    const data = snap.val() || {};
+    const seen = new Set();
+    for (const pid in data){
+      if (pid === myPlayerId) continue;
+      seen.add(pid);
+      const p = data[pid];
+      if (!p || typeof p.lat !== 'number' || typeof p.lng !== 'number') continue;
+      let rp = remotePlayers[pid];
+      if (!rp){
+        const marker = L.marker([p.lat,p.lng], { icon:ghostIcon(p.color||'#ffffff'), interactive:false }).addTo(map);
+        marker.bindTooltip(p.name||'??', { permanent:true, direction:'top', className:'landmark-label', offset:[0,-10] });
+        rp = remotePlayers[pid] = { marker, lat:p.lat, lng:p.lng, targetLat:p.lat, targetLng:p.lng };
+      }
+      rp.targetLat = p.lat; rp.targetLng = p.lng; rp.power = p.power;
+    }
+    // 접속 종료된 플레이어 정리
+    for (const pid in remotePlayers){
+      if (!seen.has(pid)){ map.removeLayer(remotePlayers[pid].marker); delete remotePlayers[pid]; }
+    }
+    onlineCount = seen.size + 1;
+    const el = document.getElementById('onlineCountLabel');
+    if (el) el.textContent = `🌐 온라인 ${onlineCount}명`;
+  });
+
+  citiesRef.on('value', snap=>{
+    const data = snap.val() || {};
+    for (const c of CITIES){
+      const remote = data[mpCityKey(c.name)];
+      if (!remote || !remote.contrib) continue;
+      const total = Object.values(remote.contrib).reduce((a,b)=>a+b, 0);
+      if (total > c.dealt){
+        c.dealt = Math.min(c.cap, total);
+        if (!(c.protectedUntil && world.elapsed < c.protectedUntil)) c.marker.setStyle({ color:cityColor(c), fillColor:cityColor(c) });
+        if (c.dealt >= c.cap && !c.destroyed){
+          c.destroyed = true;
+          pushNews(`속보: ${c.name}, 다른 태풍의 협공으로 완전히 초토화`);
+          if (gameState===STATE.PLAYING){ cameraShake(); showAlert(`🚨 ${c.name} 초토화`); SoundManager.boom(); }
+        }
+      }
+    }
+  });
+}
+
+// 이번 판 동안 각 도시에 내가 직접 기여한 피해량 (합산은 서버 쪽 값을 신뢰하지 않고 내 값만 계속 덮어씀)
+const myContrib = {};
+const mpDirtyKeys = new Set();
+function mpReportDamage(city, add){
+  if (!mpReady) return;
+  const key = mpCityKey(city.name);
+  myContrib[key] = Math.min(city.cap, (myContrib[key]||0) + add);
+  mpDirtyKeys.add(key); // 실제 전송은 flushMpContrib()에서 스로틀해서 처리 (매 프레임 쓰기 방지)
+}
+function flushMpContrib(){
+  if (!mpReady || mpDirtyKeys.size===0) return;
+  for (const key of mpDirtyKeys){
+    citiesRef.child(key).child('contrib').child(myPlayerId).set(myContrib[key]);
+  }
+  mpDirtyKeys.clear();
+}
+function mpJoin(){
+  if (!mpReady) return;
+  playersRef.child(myPlayerId).onDisconnect().remove();
+}
+function mpLeave(){
+  if (!mpReady) return;
+  playersRef.child(myPlayerId).remove();
+}
+let mpBroadcastTick = 0;
+function mpBroadcastPosition(dt, stats){
+  if (!mpReady || !stormLatLng) return;
+  mpBroadcastTick += dt;
+  if (mpBroadcastTick < 0.2) return;
+  mpBroadcastTick = 0;
+  playersRef.child(myPlayerId).set({
+    name: world.name, lat: stormLatLng.lat, lng: stormLatLng.lng,
+    power: Math.round(world.power), color: myColor, t: Date.now()
+  });
+}
+function updateRemotePlayers(dt){
+  const t = Math.min(1, dt*6);
+  for (const pid in remotePlayers){
+    const rp = remotePlayers[pid];
+    rp.lat += (rp.targetLat - rp.lat) * t;
+    rp.lng += (rp.targetLng - rp.lng) * t;
+    rp.marker.setLatLng([rp.lat, rp.lng]);
+  }
 }
 // 동북아시아 대량 추가 도시 목록 (한국/일본/대만/북한/중국 연안/러시아 극동)
 const NE_ASIA_CITIES = [
@@ -1188,6 +1327,7 @@ function applyCityDamage(dt, stats, lat, lng){
     const protectedNow = c.protectedUntil && world.elapsed < c.protectedUntil;
     const densityMul=Math.max(.65,Math.min(2.35,Math.sqrt((c.density||2500)/2500))); const add=c.cap*powerRatio*stats.dmgMul*CONFIG.DAMAGE_SCALE*dt*densityMul*(protectedNow?.5:1);
     c.dealt = Math.min(c.cap, c.dealt+add); world.score += add;
+    mpReportDamage(c, add);
     if (!protectedNow) c.marker.setStyle({ color:cityColor(c), fillColor:cityColor(c) });
     if (c.dealt>=c.cap && !c.destroyed){
       c.destroyed = true;
@@ -1302,6 +1442,7 @@ function updateCompass(){
 }
 function endGame(win, reason){
   gameState = STATE.RESULT;
+  mpLeave();
   document.getElementById('hud').classList.remove('show');
   joystickZone.classList.remove('show');
   document.getElementById('typhoonSprite').classList.remove('show');
@@ -1350,6 +1491,8 @@ function loop(now){
     forecastTick += dt; if (forecastTick>0.2){ forecastTick=0; updateForecast(speed); }
     minimapTick += dt; if (minimapTick>0.4){ minimapTick=0; drawMinimap(stormLatLng ? stormLatLng.lat : 0, stormLatLng ? stormLatLng.lng : 0); }
     breakwaterTick += dt; if (breakwaterTick>25){ breakwaterTick=0; triggerBreakwater(); }
+    mpBroadcastPosition(dt, stats);
+    flushMpContrib();
     tickerUpdate(dt);
     const center = map.getCenter();
     stormLatLng = center;
@@ -1380,6 +1523,7 @@ function loop(now){
     if (world.power<=0) endGame(false, '세력을 모두 잃고 소멸했습니다');
     else if (world.weakTimer>=CONFIG.WEAK_DEATH_SECONDS) endGame(false, '약화된 채로 오래 머물러 소산되었습니다');
   }
+  updateRemotePlayers(dt); // 이름 입력/위치 선택 화면에서도 다른 플레이어 태풍이 보이도록 항상 갱신
   requestAnimationFrame(loop);
 }
 
@@ -1568,6 +1712,20 @@ locConfirmBtn.addEventListener('click', ()=>{
   unlockedAchievements = new Set(); warmPoolVisited = false; lastWarmPoolZone = null;
   resetTrail();
   CITIES.forEach(c=>{ c.dealt=0; c.destroyed=false; c.protectedUntil=0; c.marker.setStyle({ color:'#ffd166', fillColor:'#ffd166' }); });
+  mpJoin();
+  if (mpReady){
+    // 도시 파괴 상태는 나 혼자만의 것이 아니라 방 전체가 공유하는 값이므로, 새 판을 시작해도 서버 쪽 누적치로 다시 맞춰준다
+    citiesRef.once('value').then(snap=>{
+      const data = snap.val() || {};
+      CITIES.forEach(c=>{
+        const remote = data[mpCityKey(c.name)];
+        const total = remote && remote.contrib ? Object.values(remote.contrib).reduce((a,b)=>a+b,0) : 0;
+        c.dealt = Math.min(c.cap, total);
+        c.destroyed = c.dealt >= c.cap;
+        c.marker.setStyle({ color:cityColor(c), fillColor:cityColor(c) });
+      });
+    }).catch(()=>{});
+  }
   if (specialCityRef){
     if (isMinseoCity(world.name)){
       specialCityRef.name = '민서집';
@@ -1647,6 +1805,7 @@ document.getElementById('backToResultBtn').addEventListener('click', ()=>{
   document.getElementById('backToResultBtn').classList.remove('show');
 });
 function resetToTitle(){
+  mpLeave();
   pauseScreen.classList.add('hidden'); resultScreen.classList.add('hidden');
   resultScreen.classList.remove('inspecting');
   document.getElementById('backToResultBtn').classList.remove('show');
